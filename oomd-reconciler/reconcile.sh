@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Architecture: Kubernetes controller pattern (edge docker-events + level 30s timer, idempotent).
+# Design rationale + full references (systemd PRs, inotify(7), docker events, k8s): see ./README.md
 # oomd-reconciler: idempotent reconcile — protected.conf'taki container'lara user.oomd_omit/avoid uygula.
 # SADECE omit/avoid xattr yazar. Container'a/oomd-config'e DOKUNMAZ. 2026-06-24 (cartographer V=0 blueprint).
 set -euo pipefail
