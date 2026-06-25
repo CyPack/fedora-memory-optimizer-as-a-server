@@ -1,0 +1,14 @@
+[Unit]
+Description=docker events -> trigger oomd reconcile on container start (edge-triggered, low latency)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/oomd-reconciler-watch.sh
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

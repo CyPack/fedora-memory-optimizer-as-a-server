@@ -1,0 +1,13 @@
+[Unit]
+Description=Reconcile systemd-oomd omit/avoid on protected docker scopes
+Documentation=file:///home/ayaz/oomd-reconciler/README.md
+After=docker.service systemd-oomd.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/oomd-reconciler/reconcile.sh
+Nice=10
+# Hardening: yalnızca user.* xattr yazar; sistem servislerine erişim gerekmez
+ProtectHome=read-only
+NoNewPrivileges=true

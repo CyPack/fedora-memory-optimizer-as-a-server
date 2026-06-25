@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodic resync of oomd omit/avoid (level-triggered safety net; catches dropped docker events)
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=30s
+AccuracySec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
