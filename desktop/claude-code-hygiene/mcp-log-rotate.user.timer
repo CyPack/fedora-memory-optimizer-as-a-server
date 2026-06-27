@@ -1,0 +1,11 @@
+[Unit]
+Description=mcp-log-rotate timer (her 24 saatte bir / gunluk — MCP loglari asla sismez, 2GB sert tavan)
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=24h
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

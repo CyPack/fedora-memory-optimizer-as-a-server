@@ -34,6 +34,7 @@ Layer 1  zswap (zstd, max_pool 20%)   → compression in front of swapfile (macO
 Layer 2  swappiness=60 / page-cluster=3 → balanced eviction for zswap+disk
 Layer 3  systemd-oomd tuned (PSI)     → proactive pressure-kill BEFORE kernel lock-up (macOS "memory pressure")
 Layer 4  oomd-reconciler               → stateful containers (DBs) removed from oomd's kill pool, redeploy-safe
+Layer 5  desktop/ (optional)           → browsers: kill a TAB not the whole browser + Claude Code log/swap hygiene
 Observe  PSI (/proc/pressure/memory) + atop  → watch PRESSURE, not swap_used (macOS "Memory Pressure" analogue)
 ```
 
@@ -80,6 +81,21 @@ cd oomd-reconciler && sudo ./install.sh
 
 ---
 
+## Desktop / Workstation (Layer 5, optional)
+
+The server core is for servers. A **desktop** needs two things it deliberately omits:
+**(1)** when memory runs low, lose **one browser tab**, not the whole browser;
+**(2)** stop heavy **Claude Code** use from piling MCP debug logs onto disk and idle sessions into swap.
+
+See **[`desktop/`](desktop/)** — `./desktop/install.sh` (run as your user) sets up:
+- `oom-browser-ladder` — tags browser **renderers (tabs) = first OOM victim**, **main + GPU/utility helpers = protected**
+- **earlyoom re-enabled** (desktop only) — the process-level killer that honours `oom_score` → kills one tab
+  *(the server core disables earlyoom; a desktop needs it because oomd's cgroup-kill would take the whole browser — see [`desktop/README.md`](desktop/README.md))*
+- `claude-code-hygiene/` — MCP-log rotator (daily, **2 GB hard cap**) + stale-session reaper (history never touched)
+- Brave/Firefox memory-saver guide ([`desktop/browser-memory-saver.md`](desktop/browser-memory-saver.md))
+
+---
+
 ## Lessons (problems → root cause → fix)
 
 - **"swap fills every minute"** → not a leak; ZRAM+disk LRU inversion + swappiness=180. → zswap + swappiness 60.
@@ -96,8 +112,11 @@ cd oomd-reconciler && sudo ./install.sh
 ---
 
 ## Agent-friendly
-`.claude/agents/diagnoser.md` lets a coding agent **auto-detect the v1 broken signature** (swappiness=180 + ZRAM+disk
-+ `zswap.enabled=0`) on any host and propose this v2 migration. Drop this repo at an agent and ask it to diagnose.
+Drop this repo at a coding agent and ask it to diagnose / install:
+- `.claude/agents/diagnoser.md` — **auto-detects the v1 broken signature** (swappiness=180 + ZRAM+disk +
+  `zswap.enabled=0`) on any host and proposes this v2 migration.
+- `.claude/agents/desktop-installer.md` — on a **desktop**, installs the optional Layer 5 (browser tab OOM
+  ladder + Claude Code hygiene). Both back up + ask for confirmation; neither commits secrets.
 
 ## License
 MIT — see `LICENSE`.

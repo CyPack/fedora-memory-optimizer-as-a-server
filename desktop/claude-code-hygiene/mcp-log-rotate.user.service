@@ -1,0 +1,8 @@
+[Unit]
+Description=Claude Code MCP debug log rotator (7g retention + 2GB sert tavan, disposable cache)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.claude/scripts/mcp-log-rotate.sh
+Nice=15
+IOSchedulingClass=idle

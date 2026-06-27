@@ -1,0 +1,11 @@
+[Unit]
+Description=stale-claude-reap timer (her 6 saatte bir >24h idle session kontrolu)
+
+[Timer]
+OnBootSec=20min
+OnUnitActiveSec=6h
+Persistent=true
+RandomizedDelaySec=3min
+
+[Install]
+WantedBy=timers.target

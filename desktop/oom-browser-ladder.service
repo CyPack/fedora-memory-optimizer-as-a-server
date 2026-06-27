@@ -1,0 +1,17 @@
+[Unit]
+Description=Desktop OOM ladder — tag browser renderers (tabs) as first OOM victims, protect the browser main process
+Documentation=https://github.com/CyPack/fedora-memory-optimizer-as-a-server
+After=graphical.target
+
+[Service]
+Type=simple
+# Runs as root: writing /proc/PID/oom_score_adj for arbitrary processes needs privilege.
+User=root
+ExecStart=/usr/local/bin/oom-browser-ladder.sh
+Restart=on-failure
+RestartSec=5
+Nice=10
+# Scans ONLY browser processes → negligible CPU.
+
+[Install]
+WantedBy=graphical.target

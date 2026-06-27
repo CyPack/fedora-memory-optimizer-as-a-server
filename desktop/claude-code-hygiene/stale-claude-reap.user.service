@@ -1,0 +1,8 @@
+[Unit]
+Description=Stale (terk edilmis, >24h idle) Claude Code session reaper (swap geri kazan, idle-safe, graceful)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.claude/scripts/stale-claude-reap.sh 24
+Nice=10
+IOSchedulingClass=idle
